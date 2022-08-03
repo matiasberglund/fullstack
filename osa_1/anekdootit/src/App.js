@@ -1,13 +1,18 @@
 import { useState } from 'react'
 
 const Display = (props) => {
-  console.log(props);
-  return <p>{props.anecdote}</p>
+  return (
+    <>
+      <h1>{props.h1}</h1>
+      <p>{props.list[props.anecdote]}</p>
+      <p>has {props.vote} votes</p>
+    </>
+  )
 }
 
 const Button = (props) => (
   <button onClick={props.handleClick}>
-    next anecdote
+    {props.name}
   </button>
 )
 
@@ -26,12 +31,26 @@ const App = () => {
     return Math.floor(Math.random() * list.length)
   }
    
-  const [selected, setSelected] = useState(anecdotes[randomNumber(anecdotes)])
+  const points = new Uint8Array(anecdotes.length)
+  const copy = [...points]
+
+  const [selected, setSelected] = useState(randomNumber(anecdotes))
+  const [votes, setVotes] = useState(copy)
+  
+  const inc = (n) => {
+    votes[n] += 1
+    return votes
+  }
+
+  const max = Math.max(...votes)
+  const i = votes.indexOf(max)
 
   return (
     <div>
-      <Display anecdote={selected}/>
-      <Button handleClick={() => setSelected(anecdotes[randomNumber(anecdotes)])}/>
+      <Display h1="Anecdote of the day" anecdote={selected} list={anecdotes} vote={votes[selected]}/>
+      <Button name="vote" handleClick={() => setVotes(inc(selected))}/>
+      <Button name="next anecdote" handleClick={() => setSelected(randomNumber(anecdotes))}/>
+      <Display h1="Anecdote with most votes" anecdote={i} list={anecdotes} vote={max}/>
     </div>
   )
 }
