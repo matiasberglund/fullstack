@@ -1,20 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Filter from "./components/Filter"
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personsService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]) 
-
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState('')
+  const [message, setMessage] = useState({content: null, type: undefined})
 
+  useEffect(() => {
+    personsService
+      .getAll()
+      .then(persons => {
+        setPersons(persons)
+      })
+  }, [])
   
   const addContact = (event) => {
     event.preventDefault()
@@ -22,18 +26,61 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-
-    if (persons.some(person => {
-      if (person.name === newName) {
-        return true;
+    
+    const pers = persons.find(p => p.name === nameObj.name)
+    
+    if (pers) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        personsService
+          .update(pers.id, nameObj)
+          .then(returnedPerson => {
+            setPersons(persons.map(p => p.id !== pers.id ? p : returnedPerson))
+            setMessage(
+              {
+                content: `Number for ${newName} has been updated`,
+                type: 'info'
+              }
+            )
+          })
+          .catch(error => {
+            setMessage(
+              {
+                content: `Information of ${pers.name} has already been removed from the server`,
+                type: 'error'
+              }
+            )
+          })
+        setTimeout(() => {
+          setMessage(
+            {
+              content: null,
+              type: undefined
+            }
+          )
+        }, 5000)
+        setNewName('')
+        setNewNumber('')
       }
-      return false;
-    })) {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      setNewNumber('')
     } else {
-      setPersons(persons.concat(nameObj))
+      personsService
+        .create(nameObj)
+        .then(personObj => {
+          setPersons(persons.concat(personObj))
+          setMessage(
+            {
+              content: `Added ${newName}`,
+              type: 'info'
+            }
+          )
+        })
+      setTimeout(() => {
+        setMessage(
+          {
+            content: null,
+            type: undefined
+          }
+        )
+      }, 5000)
       setNewName('')
       setNewNumber('')
     }
@@ -51,6 +98,41 @@ const App = () => {
     setShowAll(event.target.value)
   }
 
+  const removePerson = (id) => {
+    const person = persons.find(p => p.id === id)
+
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personsService
+        .remove(person.id)
+        .then(personObj => {
+          setPersons(persons.filter(p => p.id !== id))
+          setMessage(
+            {
+              content: `Deleted ${person.name}`,
+              type: 'info'
+            }
+          )
+        })
+        .catch(error => {
+          setPersons(persons.filter(p => p.id !== id))
+          setMessage(
+            {
+              content: `Information of ${person.name} has already been removed from the server`,
+              type: 'error'
+            }
+          )
+        })
+      setTimeout(() => {
+        setMessage(
+          {
+            content: null,
+            type: undefined
+          }
+        )
+      }, 5000)
+    }
+  }
+
   const contactsToShow = showAll
     ? persons.filter(person => person.name.toLowerCase().includes(showAll))
     : persons
@@ -58,8 +140,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
-      <Filter showAll={showAll} handleFilterChange={handleFilterChange}/>
+      <Notification message={message.content} type={message.type}/>
+      <Filter
+        showAll={showAll}
+        handleFilterChange={handleFilterChange}
+      />
 
       <h3>add a new</h3>
 
@@ -72,8 +157,13 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-
-      <Persons contacts={contactsToShow} />
+      {contactsToShow.map(p =>
+        <Persons
+          key={p.id}
+          person={p}
+          removePerson={() => removePerson(p.id)}
+        />
+      )} 
     </div>
   )
 
