@@ -5,7 +5,7 @@ const CountryDetails = ({ country }) => {
   const [weather, setWeather] = useState(null);
   useEffect(() => {
     axios
-      .get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital[0]}&units=metric&appid=773e2ff73e0217c6bb696ecf31b2011e`)
+      .get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital[0]}&units=metric&appid=${process.env.MAADATA_API_KEY}`)
       .then(response => {
         setWeather(response.data);
       })
