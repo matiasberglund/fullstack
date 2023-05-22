@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit1"
+    "test": "echo \"Error: no test specified\" && exit1",
+    "lint": "eslint ."
   },
   "author": "Matias Berglund",
   "license": "MIT",
@@ -17,6 +18,7 @@
     "mongoose": "^7.1.2"
   },
   "devDependencies": {
+    "eslint": "^8.41.0",
     "nodemon": "^2.0.22"
   }
 }

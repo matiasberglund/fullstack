@@ -6,11 +6,11 @@ import personsService from './services/persons'
 import Notification from './components/Notification'
 
 const App = () => {
-  const [persons, setPersons] = useState([]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState('')
-  const [message, setMessage] = useState({content: null, type: undefined})
+  const [message, setMessage] = useState({ content: null, type: undefined })
 
   useEffect(() => {
     personsService
@@ -19,16 +19,16 @@ const App = () => {
         setPersons(persons)
       })
   }, [])
-  
+
   const addContact = (event) => {
     event.preventDefault()
     const nameObj = {
       name: newName,
       number: newNumber
     }
-    
+
     const pers = persons.find(p => p.name === nameObj.name)
-    
+
     if (pers) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         personsService
@@ -70,6 +70,15 @@ const App = () => {
             {
               content: `Added ${newName}`,
               type: 'info'
+            }
+          )
+        })
+        .catch(error => {
+          console.log(error.response.data)
+          setMessage(
+            {
+              content: error.response.data.error,
+              type: 'error'
             }
           )
         })
@@ -140,7 +149,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message.content} type={message.type}/>
+      <Notification message={message.content} type={message.type} />
       <Filter
         showAll={showAll}
         handleFilterChange={handleFilterChange}
@@ -148,12 +157,12 @@ const App = () => {
 
       <h3>add a new</h3>
 
-      <PersonForm 
-        addNew={addContact} 
-        name={newName} 
-        number={newNumber} 
-        handleNameChange={handleNameChange} 
-        handleNumberChange={handleNumberChange} 
+      <PersonForm
+        addNew={addContact}
+        name={newName}
+        number={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
       />
 
       <h3>Numbers</h3>
@@ -163,7 +172,7 @@ const App = () => {
           person={p}
           removePerson={() => removePerson(p.id)}
         />
-      )} 
+      )}
     </div>
   )
 }
