@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 //   process.exit(1)
 // }
 
-const url = 'mongodb+srv://matiasberglund5:tzELv6uzMOKySnh1@cluster0.l0niook.mongodb.net/testNoteApp?retryWrites=true&w=majority'
+const url = process.env.TEST_MONGODB_URI
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
