@@ -108,6 +108,70 @@ test('blog without url is not added', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 })
 
+test('can delete a blog', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(
+    helper.initialBlogs.length - 1
+  )
+
+  const titles = blogsAtEnd.map(r => r.title)
+
+  expect(titles).not.toContain(blogToDelete.title)
+})
+
+test('blog can be updated', async () => {
+  const blog = {
+    title: 'Updating an existing blog',
+    author: 'Updated author',
+    url: 'updated.url',
+    likes: 690
+  }
+
+  const blogsAtStart = await helper.blogsInDb()
+
+  await api
+    .put(`/api/blogs/${blogsAtStart[0].id}`)
+    .send(blog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  // expect to have same length
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+
+  const titles = blogsAtEnd.map(r => r.title)
+
+  expect(titles).toContain(blog.title)
+  expect(blogsAtEnd[0].id).toBe(blogsAtStart[0].id)
+})
+
+test('fails with status 400 if id is invalid', async () => {
+  const blog = {
+    title: 'Updating an existing blog',
+    author: 'Updated author',
+    url: 'updated.url',
+    likes: 690
+  }
+
+  const invalidId = 1234
+
+  await api
+    .put(`/api/blogs/${invalidId}`)
+    .send(blog)
+    .expect(400)
+
+  // expect to have same length
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+})
 
 afterAll(async () => {
   await mongoose.connection.close()
