@@ -6,17 +6,17 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   const showDeleteButton = blog.user.username === user.username ? true : false
 
   return (
-    <div className="blog-container">
-      {blog.title} {blog.author} <button onClick={() => setShowDetails(!showDetails)}>{!showDetails ? 'view' : 'hide'}</button>
+    <div className="blog-container" data-testid="blog-container">
+      {blog.title} {blog.author} <button onClick={() => setShowDetails(!showDetails)} data-testid="details-button">{!showDetails ? 'view' : 'hide'}</button>
       {showDetails &&
-        <div>
-          <div>
+        <div data-testid="details-container">
+          <div data-testid="url-container">
             <a href={blog.url}>{blog.url}</a>
           </div>
-          <div>
+          <div data-testid="likes-container">
             {blog.likes} <button onClick={addLike}>like</button>
           </div>
-          <div>
+          <div data-testid="user-name-container">
             {blog.user ? blog.user.name : null}
           </div>
           <div>
