@@ -6,7 +6,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   const showDeleteButton = blog.user.username === user.username ? true : false
 
   return (
-    <div className="blog-container" data-testid="blog-container">
+    <div className="blog-container" data-testid="blog-container" data-cy={blog.title}>
       {blog.title} {blog.author} <button onClick={() => setShowDetails(!showDetails)} data-testid="details-button">{!showDetails ? 'view' : 'hide'}</button>
       {showDetails &&
         <div data-testid="details-container">
@@ -14,14 +14,14 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
             <a href={blog.url}>{blog.url}</a>
           </div>
           <div data-testid="likes-container">
-            {blog.likes} <button onClick={addLike}>like</button>
+            {blog.likes} <button data-testid="like-button" onClick={addLike}>like</button>
           </div>
           <div data-testid="user-name-container">
             {blog.user ? blog.user.name : null}
           </div>
           <div>
             {showDeleteButton &&
-              <button onClick={deleteBlog}>remove</button>
+              <button data-cy="remove-button" onClick={deleteBlog}>remove</button>
             }
           </div>
         </div>

@@ -86,11 +86,11 @@ const App = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       blogService
         .remove(id)
-        .then(returnedBlog => {
+        .then(() => {
           setBlogs(blogs.filter(b => b.id !== id))
           setMessage(
             {
-              content: `${ returnedBlog.title } by ${ returnedBlog.author } removed.`,
+              content: `${ blog.title } by ${ blog.author } removed.`,
               type: 'info'
             }
           )
@@ -146,10 +146,11 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <form id='login-form' onSubmit={handleLogin}>
       <div>
         username
         <input
+          id='username'
           type="text"
           value={username}
           name="Username"
@@ -159,13 +160,14 @@ const App = () => {
       <div>
         password
         <input
+          id='password'
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <button id='login-button' type="submit">login</button>
     </form>
   )
 

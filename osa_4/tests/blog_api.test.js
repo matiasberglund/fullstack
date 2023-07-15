@@ -36,7 +36,7 @@ describe('With initial blogs', () => {
     for (let blog of helper.initialBlogs) {
       await api
         .post('/api/blogs')
-        .send(blog)
+        .send({ ...blog, user: user })
         .set('Authorization', `bearer ${token}`)
     }
   })
