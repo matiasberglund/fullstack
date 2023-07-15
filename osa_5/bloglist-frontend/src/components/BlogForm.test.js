@@ -20,7 +20,7 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, 'Test Author')
     await user.type(urlInput, 'Test URL')
     await user.click(submit)
-    
+
     expect(createBlog.mock.calls[0][0])
       .toEqual(
         {

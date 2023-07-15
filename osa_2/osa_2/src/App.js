@@ -54,7 +54,7 @@ const App = () => {
       .update(id, changedNote).then(returnedNote => {
         setNotes(notes.map(note => note.id !== id ? note : returnedNote))
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
@@ -90,13 +90,13 @@ const App = () => {
   const loginForm = () => {
     return (
       <Togglable buttonLabel='login'>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
       </Togglable>
     )
   }
@@ -105,7 +105,7 @@ const App = () => {
 
   const noteForm = () => (
     <Togglable buttonLabel="new note" ref={noteFormRef}>
-      <NoteForm 
+      <NoteForm
         createNote={addNote}
       />
     </Togglable>
@@ -116,9 +116,9 @@ const App = () => {
       <h1>Notes app</h1>
 
       <Notification message={errorMessage} />
-      
+
       {!user && loginForm()}
-      {user && 
+      {user &&
         <div>
           <p>{user.name} logged in</p>
           {noteForm()}
